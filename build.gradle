@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'distribution'
+
+repositories {false
+  maven {
+    url 'http://nexus.pentaho.org/content/groups/omni'
+  }
+}
+
+distributions {
+  plugin {
+    baseName = 'kettle-docker'
+    contents {
+      from { project.libsDir }
+    }
+  }
+}
+
+configurations {
+  provided
+  providedPlusCompile.extendsFrom(compile, provided)
+  testCompile.extendsFrom(providedPlusCompile)
+}
+
+dependencies {
+  provided 'pentaho-kettle:kettle-core:6.0-SNAPSHOT'
+  provided 'pentaho-kettle:kettle-engine:6.0-SNAPSHOT'
+  provided 'pentaho-kettle:kettle-ui-swt:6.0-SNAPSHOT'
+}
+
+sourceSets.main {
+  compileClasspath = configurations.providedPlusCompile
+}
+
+plugins.withType(IdeaPlugin) {
+  idea.module.scopes.PROVIDED.plus = [ configurations.provided ]
+}
+
