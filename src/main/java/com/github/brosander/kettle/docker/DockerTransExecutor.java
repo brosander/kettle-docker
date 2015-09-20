@@ -70,9 +70,9 @@ public class DockerTransExecutor extends BaseStep implements StepInterface {
         RowMetaInterface inputRowMeta = getInputRowMeta();
         if (first) {
             dockerTransExecutorData.inputRowMeta = inputRowMeta;
-            dockerTransExecutorData.process = null;//startContainer();
+            dockerTransExecutorData.process = startContainer();
             try {
-                dockerTransExecutorData.containerId = "77852b81dfbb"; //getContainerId(dockerTransExecutorData.process);
+                dockerTransExecutorData.containerId = readOnlyOutputLine(dockerTransExecutorData.process).trim();
                 TransMeta subTrans = dockerTransExecutorMeta.loadReferencedObject(0, getRepository(), getMetaStore(), this);
 
                 TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
@@ -87,6 +87,16 @@ public class DockerTransExecutor extends BaseStep implements StepInterface {
 
                 SlaveServer slaveServer = new SlaveServer("container-slave-server", "localhost", getPort(dockerTransExecutorData.containerId, "8080"), "cluster", "cluster");
 
+                int count = 0;
+                while(count++ < 60 * 20) {
+                    try {
+                        slaveServer.getStatus();
+                        break;
+                    } catch (Exception e) {
+                        log.logDebug("Still waiting for slave server to start", e);
+                    }
+                    Thread.sleep(1000);
+                }
                 executionConfiguration.getVariables().putAll(vars);
                 slaveServer.injectVariables(executionConfiguration.getVariables());
 
@@ -192,7 +202,7 @@ public class DockerTransExecutor extends BaseStep implements StepInterface {
 
     private Process startContainer() throws KettleException {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command(Arrays.asList("docker", "run", "-d", "-P", "--rm=true", environmentSubstitute(dockerTransExecutorMeta.getImage())));
+        processBuilder.command(Arrays.asList("docker", "run", "-d", "-P", environmentSubstitute(dockerTransExecutorMeta.getImage())));
         try {
             return processBuilder.start();
         } catch (IOException e) {

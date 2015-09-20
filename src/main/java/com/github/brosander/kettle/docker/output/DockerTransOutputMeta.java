@@ -13,7 +13,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 /**
  * Created by bryan on 9/10/15.
  */
-@Step(id = "DockerTransOutput", image = "docker-output.png", i18nPackageName = "com.github.brosander.kettle.docker.output", name = "DockerTransOutputMeta.TransName", description = "DockerTransOutputMeta.TransDescription", categoryDescription = "DockerTransOutputMeta.CategoryDescription")
+@Step(id = "DockerTransOutput", image = "docker.png", i18nPackageName = "com.github.brosander.kettle.docker.output", name = "DockerTransOutputMeta.TransName", description = "DockerTransOutputMeta.TransDescription", categoryDescription = "DockerTransOutputMeta.CategoryDescription")
 public class DockerTransOutputMeta extends BaseStepMeta implements StepMetaInterface {
     @Override
     public void setDefault() {
@@ -28,5 +28,10 @@ public class DockerTransOutputMeta extends BaseStepMeta implements StepMetaInter
     @Override
     public StepDataInterface getStepData() {
         return new DockerTransOutputData();
+    }
+
+    @Override
+    public String getDialogClassName() {
+        throw new RuntimeException("This step doesn't require configuration");
     }
 }
