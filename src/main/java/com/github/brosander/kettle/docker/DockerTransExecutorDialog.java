@@ -16,6 +16,8 @@ public class DockerTransExecutorDialog extends BaseStepXulDialog {
     private String tempStepName;
     private String image;
     private String transformation;
+    private boolean killContainer;
+    private boolean removeContainer;
 
     public DockerTransExecutorDialog(Shell parent, Object in, TransMeta transMeta, String stepname) {
         super("com/github/brosander/kettle/docker/dockerTransExecutorDialog.xul", parent, (BaseStepMeta) in, transMeta, stepname);
@@ -28,9 +30,27 @@ public class DockerTransExecutorDialog extends BaseStepXulDialog {
             bf.createBinding(this, "tempStepName", "step-name", "value").fireSourceChanged();
             bf.createBinding(this, DockerTransExecutorMeta.IMAGE, "image", "value").fireSourceChanged();
             bf.createBinding(this, DockerTransExecutorMeta.TRANSFORMATION, "transformation", "value").fireSourceChanged();
+            bf.createBinding(this, DockerTransExecutorMeta.KILL_CONTAINER, "killContainer", "checked").fireSourceChanged();
+            bf.createBinding(this, DockerTransExecutorMeta.REMOVE_CONTAINER, "removeContainer", "checked").fireSourceChanged();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean isKillContainer() {
+        return killContainer;
+    }
+
+    public void setKillContainer(boolean killContainer) {
+        this.killContainer = killContainer;
+    }
+
+    public boolean isRemoveContainer() {
+        return removeContainer;
+    }
+
+    public void setRemoveContainer(boolean removeContainer) {
+        this.removeContainer = removeContainer;
     }
 
     @Override
@@ -66,16 +86,20 @@ public class DockerTransExecutorDialog extends BaseStepXulDialog {
     }
 
     public void saveMeta(DockerTransExecutorMeta meta) {
-        if (!nullSafeEquals(meta.getImage(), image) || !nullSafeEquals(meta.getTransformation(), transformation)) {
+        if (!nullSafeEquals(meta.getImage(), image) || !nullSafeEquals(meta.getTransformation(), transformation) || killContainer != meta.isKillContainer() || removeContainer != meta.isRemoveContainer()) {
             baseStepMeta.setChanged();
         }
         meta.setImage(image);
         meta.setTransformation(transformation);
+        meta.setKillContainer(killContainer);
+        meta.setRemoveContainer(removeContainer);
     }
 
     public void loadMeta(DockerTransExecutorMeta meta) {
         image = meta.getImage();
         transformation = meta.getTransformation();
+        killContainer = meta.isKillContainer();
+        removeContainer = meta.isRemoveContainer();
     }
 
 

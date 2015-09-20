@@ -35,6 +35,18 @@
                     <button id="template-file-browse" label="${DockerTransExecutorDialog.Transformation.Browse.Label}" onclick="handler.selectTransformationFile()"/>
                 </hbox>
             </row>
+            <row>
+                <label value="${Docker.DockerTransExecutorDialog.KillContainer.Label}" align="end"/>
+                <hbox flex="1">
+                    <checkbox id="killContainer"/>
+                </hbox>
+            </row>
+            <row>
+                <label value="${Docker.DockerTransExecutorDialog.RemoveContainer.Label}" align="end"/>
+                <hbox flex="1">
+                    <checkbox id="removeContainer"/>
+                </hbox>
+            </row>
         </rows>
     </grid>
 </dialog>

@@ -44,10 +44,16 @@ public class DockerTransExecutorMeta extends BaseStepMeta implements StepMetaInt
     public static final String DEFAULT_TRANSFORMATION = "";
     public static final String TRANSFORMATION = "transformation";
     public static final String DOCKER_TRANS_EXECUTOR_META_DOCKER_TRANS = "DockerTransExecutorMeta.DockerTrans";
+    private static final boolean DEFAULT_KILL_CONTAINER = true;
+    private static final boolean DEFAULT_REMOVE_CONTAINER = true;
+    public static final String KILL_CONTAINER = "killContainer";
+    public static final String REMOVE_CONTAINER = "removeContainer";
     private String image = DEFAULT_IMAGE;
     private String transformation = DEFAULT_TRANSFORMATION;
     private TransSpecificationMethod transSpecificationMethod = DEFAULT_TRANS_SPECIFICATION_METHOD;
     private TransMeta subTransMeta;
+    private boolean killContainer = DEFAULT_KILL_CONTAINER;
+    private boolean removeContainer = DEFAULT_REMOVE_CONTAINER;
 
     public String getTransformation() {
         return transformation;
@@ -72,6 +78,8 @@ public class DockerTransExecutorMeta extends BaseStepMeta implements StepMetaInt
         image = DEFAULT_IMAGE;
         transformation = DEFAULT_TRANSFORMATION;
         transSpecificationMethod = DEFAULT_TRANS_SPECIFICATION_METHOD;
+        killContainer = DEFAULT_KILL_CONTAINER;
+        removeContainer = DEFAULT_REMOVE_CONTAINER;
     }
 
     @Override
@@ -89,6 +97,8 @@ public class DockerTransExecutorMeta extends BaseStepMeta implements StepMetaInt
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("    ").append(XMLHandler.addTagValue(IMAGE, image));
         stringBuilder.append("    ").append(XMLHandler.addTagValue(TRANSFORMATION, transformation));
+        stringBuilder.append("    ").append(XMLHandler.addTagValue(KILL_CONTAINER, killContainer));
+        stringBuilder.append("    ").append(XMLHandler.addTagValue(REMOVE_CONTAINER, removeContainer));
         return stringBuilder.toString();
     }
 
@@ -96,18 +106,24 @@ public class DockerTransExecutorMeta extends BaseStepMeta implements StepMetaInt
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore) throws KettleXMLException {
         image = XMLHandler.getTagValue(stepnode, IMAGE);
         transformation = XMLHandler.getTagValue(stepnode, TRANSFORMATION);
+        killContainer = "Y".equals(XMLHandler.getTagValue(stepnode, KILL_CONTAINER));
+        removeContainer = "Y".equals(XMLHandler.getTagValue(stepnode, REMOVE_CONTAINER));
     }
 
     @Override
     public void readRep(Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases) throws KettleException {
         image = rep.getStepAttributeString(id_step, IMAGE);
         transformation = rep.getStepAttributeString(id_step, TRANSFORMATION);
+        killContainer = rep.getStepAttributeBoolean(id_step, KILL_CONTAINER);
+        removeContainer = rep.getStepAttributeBoolean(id_step, REMOVE_CONTAINER);
     }
 
     @Override
     public void saveRep(Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step) throws KettleException {
         rep.saveStepAttribute(id_transformation, id_step, IMAGE, image);
         rep.saveStepAttribute(id_transformation, id_step, TRANSFORMATION, transformation);
+        rep.saveStepAttribute(id_transformation, id_step, KILL_CONTAINER, killContainer);
+        rep.saveStepAttribute(id_transformation, id_step, REMOVE_CONTAINER, removeContainer);
     }
 
     @Override
@@ -158,6 +174,22 @@ public class DockerTransExecutorMeta extends BaseStepMeta implements StepMetaInt
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isKillContainer() {
+        return killContainer;
+    }
+
+    public void setKillContainer(boolean killContainer) {
+        this.killContainer = killContainer;
+    }
+
+    public boolean isRemoveContainer() {
+        return removeContainer;
+    }
+
+    public void setRemoveContainer(boolean removeContainer) {
+        this.removeContainer = removeContainer;
     }
 
     @Override

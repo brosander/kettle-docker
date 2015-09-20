@@ -65,6 +65,20 @@ public class DockerTransExecutor extends BaseStep implements StepInterface {
                     throw new KettleException(e);
                 }
             }
+            if (!Const.isEmpty(dockerTransExecutorData.containerId)) {
+                try {
+                    if (dockerTransExecutorMeta.isKillContainer()) {
+                        new ProcessBuilder(Arrays.asList("docker", "kill", dockerTransExecutorData.containerId)).start().waitFor();
+                        if (dockerTransExecutorMeta.isRemoveContainer()) {
+                            new ProcessBuilder(Arrays.asList("docker", "rm", dockerTransExecutorData.containerId)).start().waitFor();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return false;
         }
         RowMetaInterface inputRowMeta = getInputRowMeta();
