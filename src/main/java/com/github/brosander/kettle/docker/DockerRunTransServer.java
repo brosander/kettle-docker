@@ -1,6 +1,5 @@
 package com.github.brosander.kettle.docker;
 
-import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
@@ -73,12 +72,12 @@ public class DockerRunTransServer implements KettleLifecycleListener, Runnable {
         final ExecutorService executorService = ExecutorUtil.getExecutor();
         while (true) {
             try {
-                Socket socket = serverSocket.accept();
-                DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-                DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+                final Socket socket = serverSocket.accept();
+                final DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+                final DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 String id = dataInputStream.readUTF();
                 String transName = dataInputStream.readUTF();
-                Trans trans = CarteSingleton.getInstance().getTransformationMap().getTransformation(new CarteObjectEntry(transName, id));
+                final Trans trans = CarteSingleton.getInstance().getTransformationMap().getTransformation(new CarteObjectEntry(transName, id));
                 KettleLogStore.discardLines(trans.getLogChannelId(), true);
 
                 String carteObjectId = UUID.randomUUID().toString();
