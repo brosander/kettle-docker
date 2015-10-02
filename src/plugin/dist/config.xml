@@ -1,0 +1,7 @@
+<slave_config>
+  <slaveserver>
+    <name>Slave01</name>
+    <hostname>0.0.0.0</hostname>
+    <port>8080</port>
+  </slaveserver>
+</slave_config>

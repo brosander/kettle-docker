@@ -1,6 +1,11 @@
-from cogniteev/oracle-java:java8
+FROM cogniteev/oracle-java:java8
 
-add data-integration.tar.gz /data-integration/
+RUN useradd etlguy
+
+RUN mkdir -p /home/etlguy
+ADD data-integration.tar.gz /home/etlguy/
+ADD config.xml /home/etlguy/
+RUN chown -R etlguy:etlguy /home/etlguy
 
 EXPOSE 8080 9001
-CMD ["/data-integration/data-integration/carte.sh", "0.0.0.0", "8080"]
+CMD ["sudo", "-u", "etlguy", "/home/etlguy/data-integration/carte.sh", "/home/etlguy/config.xml"]
